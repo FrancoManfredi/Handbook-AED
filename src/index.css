@@ -1,0 +1,6 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #b0b0ad; }
+button, input { font-family: inherit; }
+p, ul, ol { margin: 0; }
+input[type=range] { height: 3px; }
+pre { margin: 0; }
