@@ -6,17 +6,22 @@ import { pages as triePages } from './pages/Tries';
 import { pages as hashPages } from './pages/Hashing';
 import { pages as collPages } from './pages/Collections';
 import { pages as extraPages } from './pages/Extra';
+import { pages as grafosPages, floydPages } from './pages/Grafos';
+import { pages as grafosNDPages } from './pages/GrafosND';
 
 export default function App() {
   const [page, setPage] = useState(0);
   const [tree, setTree] = useState(INIT_TREE);
 
   const allPages = [
-    ...treePages(tree, setTree),
-    ...triePages(),
-    ...hashPages(),
-    ...collPages(),
-    ...extraPages(tree),
+    ...treePages(tree, setTree), // 0-6   (7)
+    ...triePages(),              // 7-13  (7)
+    ...hashPages(),              // 14-19 (6)
+    ...collPages(),              // 20-27 (8)
+    ...grafosPages(),            // 28-40 (13)
+    ...floydPages(),             // 41-43 (3)
+    ...grafosNDPages(),          // 43-52 (10)
+    ...extraPages(tree),         // 53    (1) ← Resumen al final
   ];
 
   useEffect(() => {
@@ -33,7 +38,6 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', background: '#b0b0ad', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 14, gap: 12 }}>
 
-      {/* Chapter tabs */}
       <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
         {CHAPTERS.map(c => (
           <button key={c.id} onClick={() => setPage(c.start)}
@@ -43,12 +47,10 @@ export default function App() {
         ))}
       </div>
 
-      {/* Book */}
       <div style={{ width: '100%', maxWidth: 1200, height: 670, boxShadow: '0 12px 50px rgba(0,0,0,0.4)', overflow: 'hidden', position: 'relative' }}>
         {allPages[page]?.()}
       </div>
 
-      {/* Navigation */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
         <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
           style={{ background: page === 0 ? '#888' : AC, color: '#fff', border: 'none', padding: '8px 22px', cursor: page === 0 ? 'not-allowed' : 'pointer', fontFamily: "'JetBrains Mono',monospace", fontSize: 12, letterSpacing: 1 }}>

@@ -6,6 +6,12 @@ export default function CodeBlock({ label, lines, steps = [] }) {
   const [playing, setPlaying] = useState(false);
   const max = steps.length;
 
+  // Reset when lines change (page navigation)
+  useEffect(() => {
+    setStep(-1);
+    setPlaying(false);
+  }, [label]);
+
   useEffect(() => {
     if (!playing) return;
     if (step >= max - 1) { setPlaying(false); return; }
@@ -13,7 +19,9 @@ export default function CodeBlock({ label, lines, steps = [] }) {
     return () => clearTimeout(t);
   }, [playing, step, max]);
 
-  const active = step >= 0 ? steps[step] : [];
+  // Defensive: active is always an array
+  const raw = step >= 0 ? steps[step] : undefined;
+  const active = Array.isArray(raw) ? raw : [];
 
   return (
     <div style={{ border: `1.5px solid ${BD}`, fontFamily: "'JetBrains Mono',monospace" }}>
@@ -22,7 +30,7 @@ export default function CodeBlock({ label, lines, steps = [] }) {
         <span style={{ fontFamily: "'Lora',serif", fontStyle: 'italic', color: BL }}>{label}</span>
       </div>
       <div style={{ padding: '10px 12px', background: '#f9f8f4', minHeight: 90 }}>
-        {lines.map((ln, i) => {
+        {(lines || []).map((ln, i) => {
           const hi = active.includes(i);
           return (
             <div key={i} style={{ display: 'flex', alignItems: 'center', background: hi ? '#ffeaed' : 'transparent', borderLeft: `3px solid ${hi ? AC : 'transparent'}`, padding: '1px 6px', lineHeight: 1.85, fontSize: 12 }}>

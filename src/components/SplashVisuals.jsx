@@ -1,5 +1,35 @@
 import { AC, BD, CH } from '../constants';
 
+export function GraphSplashSVG() {
+  // Directed graph splash: nodes with arrows
+  const nodes = [[280,60],[140,160],[280,160],[420,160],[210,260],[350,260]];
+  const edges = [[0,1],[0,2],[0,3],[1,4],[2,4],[2,5],[3,5]];
+  function arrowPts(x1,y1,x2,y2) {
+    const a=Math.atan2(y2-y1,x2-x1),r=22;
+    const ex=x2-r*Math.cos(a),ey=y2-r*Math.sin(a);
+    const sx=x1+r*Math.cos(a),sy=y1+r*Math.sin(a);
+    return {sx,sy,ex,ey,a};
+  }
+  return (
+    <svg width={560} height={310} style={{marginBottom:-5}}>
+      {edges.map(([a,b],i)=>{
+        const {sx,sy,ex,ey,a:ang}=arrowPts(nodes[a][0],nodes[a][1],nodes[b][0],nodes[b][1]);
+        return (
+          <g key={i}>
+            <line x1={sx} y1={sy} x2={ex} y2={ey} stroke={BD} strokeWidth={2}/>
+            <polygon points={`${ex},${ey} ${ex-9*Math.cos(ang-0.4)},${ey-9*Math.sin(ang-0.4)} ${ex-9*Math.cos(ang+0.4)},${ey-9*Math.sin(ang+0.4)}`} fill={BD}/>
+          </g>
+        );
+      })}
+      {nodes.map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r={22} fill={CH} stroke={i===0?AC:BD} strokeWidth={i===0?3:2.5}/>
+      ))}
+      {/* highlight arc cost label on one edge */}
+      <text x={210} y={104} textAnchor="middle" fontFamily="'JetBrains Mono',monospace" fontSize={11} fill={AC}>w</text>
+    </svg>
+  );
+}
+
 export function TreeSplashSVG() {
   const sn=[[280,55],[165,135],[280,135],[395,135],[105,215],[225,215],[280,215],[345,215],[435,215]];
   const se=[[0,1],[0,2],[0,3],[1,4],[1,5],[2,6],[2,7],[3,8]];
