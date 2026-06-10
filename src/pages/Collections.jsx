@@ -1,5 +1,6 @@
 import { Splash, TwoCol, FullPg } from '../components/PageShells';
 import CodeBlock from '../components/CodeBlock';
+import { iteratorVisual, mapVisual } from '../components/CodeVisuals';
 import CollHierarchy from '../components/CollHierarchy';
 import CompTable from '../components/CompTable';
 import { CollSplashSVG } from '../components/SplashVisuals';
@@ -51,7 +52,8 @@ export function pages() {
         "// Operaciones bulk",
         "col.addAll(otraColeccion);",
         "col.removeAll(otraColeccion);"
-      ]} steps={[[0],[2,3],[5,6,7,8,9,10,11,12,13,14],[16,17,18]]}/>}
+      ]} steps={[[0],[2,3],[5,6,7,8,9,10,11,12,13,14],[16,17,18]]}
+         visual={(step) => iteratorVisual(step)}/>}
     />,
 
     // ── p23: LISTITERATOR Y ALGORITMOS ───────────────────
@@ -88,7 +90,8 @@ export function pages() {
         "Collections.rotate(list, 2);",
         "Collections.swap(list, 0, 1);",
         "int i = Collections.binarySearch(list, \"b\");"
-      ]} steps={[[0,1],[3,4,5,6],[7,8],[10,11,12],[14,15],[16,17,18,19]]}/>}
+      ]} steps={[[0,1],[3,4,5,6],[7,8],[10,11,12],[14,15],[16,17,18,19]]}
+         visual={(step) => iteratorVisual(step)}/>}
     />,
 
     // ── p24: MAP — VISTAS Y COLLECTION VIEWS ─────────────
@@ -126,7 +129,8 @@ export function pages() {
         "        : m.entrySet()) {",
         "    System.out.println(",
         "        e.getKey()+\": \"+e.getValue());","}"
-      ]} steps={[[0],[2,3,4],[6,7,8,9,10,11],[13,14,15,16,17,18]]}/>}
+      ]} steps={[[0],[2,3,4],[6,7,8,9,10,11],[13,14,15,16,17,18]]}
+         visual={(step) => mapVisual(step)}/>}
     />,
 
     // ── p25: COMPARABLE & COMPARATOR ─────────────────────

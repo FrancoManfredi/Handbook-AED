@@ -5,6 +5,7 @@ import { DijkstraViz, FloydViz, BPFViz, TopoViz } from '../components/GraphViz';
 import { GraphSplashSVG } from '../components/SplashVisuals';
 import { C, P, UL } from '../helpers';
 import { AC, BL, BD, TX } from '../constants';
+import { dijkstraVisual, pathVisual } from '../components/CodeVisuals';
 
 const pre = {
   fontFamily: "'JetBrains Mono',monospace",
@@ -170,7 +171,8 @@ export function pages() {
         "        }",
         "    }",
         "}",
-      ]} steps={[[0],[1,2,3],[4,5,6],[8],[9,10,11,12,13,14],[16,17,18,19,20,21,22,23,24],[25,26]]} />}
+      ]} steps={[[0],[1,2,3],[4,5,6],[8],[9,10,11,12,13,14],[16,17,18,19,20,21,22,23,24],[25,26]]}
+         visual={(step) => dijkstraVisual(step)} />}
     />,
 
     // ── p34: FLOYD ───────────────────────────────────────
@@ -322,7 +324,8 @@ export function pages() {
           "    vis.remove(n); stk.pop();",
           "    return null;",
           "}",
-        ]} steps={[[0],[1,2,3,4],[6],[7],[8,9],[10],[11,12,13,14],[15,16,17]]} />
+        ]} steps={[[0],[1,2,3,4],[6],[7],[8,9],[10],[11,12,13,14],[15,16,17]]}
+         visual={(step) => pathVisual(step)} />
       </div>}
     />,
 

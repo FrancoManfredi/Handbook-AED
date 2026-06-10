@@ -1,8 +1,7 @@
 # 📖 Handbook Interactivo — AED UT03
+
 Handbook interactivo colaborativo para la unidad temática 03 de Algoritmos y Estructuras de Datos.  
 Construido con **Vite + React 18**, visualizaciones en SVG puro, sin librerías de UI externas.
-
-<img width="1763" height="841" alt="image" src="https://github.com/user-attachments/assets/271f54cc-5c0a-473d-9803-f70444d05d24" />
 
 ## Temas cubiertos
 
