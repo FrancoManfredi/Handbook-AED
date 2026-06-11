@@ -3,6 +3,8 @@ import CompTable from '../components/CompTable';
 import { GraphExplorerViz, PrimViz, KruskalViz, BFSViz, ArticulationViz } from '../components/UndirectedViz';
 import { C, P, UL } from '../helpers';
 import { AC, BL, BD, TX } from '../constants';
+import PseudoBlock from '../components/PseudoBlock';
+import { primPseudoVisual, kruskalPseudoVisual, beaPseudoVisual, articulationPseudoVisual, bpfPseudoVisual } from '../components/PseudoVisuals';
 
 const GRN = '#27ae60';
 const ORG = '#e67e22';
@@ -135,8 +137,42 @@ export function pages() {
     () => <TwoCol title="Grafos No Dirigidos" badge="PRIM — ARBOL ABARCADOR MINIMO" num={48}
       left={<div>
         <P>Prim expande el árbol vértice por vértice eligiendo siempre la arista más barata que cruza el <strong>corte</strong> entre U (incluidos) y V−U (pendientes).</P>
-        <pre style={pre}>{`Prim(G, origen)\n  U ← {origen}\n  V ← G.vertices\n  M ← grafo vacío (solo vértices)\n  costo ← 0\n\n  Mientras U ≠ V hacer\n    // buscar arista más barata\n    // que cruza el corte U / V-U\n    (u,v) ← arista de costo mínimo\n              con u ∈ U, v ∈ V-U\n    agregar (u,v) a M\n    agregar v a U\n    costo ← costo + c(u,v)\n  FinMientras\n  devolver M`}</pre>
-        <pre style={{...pre, marginTop:0}}>{`// Función auxiliar\nbuscarMin(G, U, V): Arista\n  min ← MAX_VALUE\n  Para cada u en U hacer\n    Para cada v en V hacer\n      arista ← G.buscarArista(u,v)\n      Si arista ≠ null\n         y arista.costo < min entonces\n        min  ← arista.costo\n        best ← arista\n      FinSi\n    FinPara\n  FinPara\n  devolver best`}</pre>
+        <PseudoBlock label="Prim(G, origen)" lines={[
+          "Prim(G, origen)",
+          "  U ← {origen}",
+          "  V ← G.vertices",
+          "  M ← grafo vacío (solo vértices)",
+          "  costo ← 0",
+          "",
+          "  Mientras U ≠ V hacer",
+          "    // buscar arista más barata",
+          "    // que cruza el corte U / V-U",
+          "    (u,v) ← arista de costo mínimo",
+          "              con u ∈ U, v ∈ V-U",
+          "    agregar (u,v) a M",
+          "    agregar v a U",
+          "    costo ← costo + c(u,v)",
+          "  FinMientras",
+          "  devolver M",
+        ]} steps={[[0,1,2,3,4],[6],[7,8,9,10],[11],[12],[13],[14,15]]}
+           visual={(step) => primPseudoVisual(step)} />
+        <PseudoBlock label="buscarMin(G, U, V)" lines={[
+          "// Función auxiliar",
+          "buscarMin(G, U, V): Arista",
+          "  min ← MAX_VALUE",
+          "  Para cada u en U hacer",
+          "    Para cada v en V hacer",
+          "      arista ← G.buscarArista(u,v)",
+          "      Si arista ≠ null",
+          "         y arista.costo < min entonces",
+          "        min  ← arista.costo",
+          "        best ← arista",
+          "      FinSi",
+          "    FinPara",
+          "  FinPara",
+          "  devolver best",
+        ]} steps={[[0,1,2],[3,4],[5],[6,7,8,9],[10,11,12],[13]]}
+           visual={(step) => primPseudoVisual(Math.min(step+1,7))} />
         <div style={blue}>
           <p style={{fontFamily:"'JetBrains Mono',monospace", fontSize:10.5, color:BL, lineHeight:1.8, margin:0}}>{`Complejidad:\n  Base: O(V · E)\n  Con heap binario: O(E log V)\n  Con heap Fibonacci: O(E + V log V)`}</p>
         </div>
@@ -148,8 +184,42 @@ export function pages() {
     () => <TwoCol title="Grafos No Dirigidos" badge="KRUSKAL — ARBOL ABARCADOR MINIMO" num={49}
       left={<div>
         <P>Kruskal agrega aristas en orden de costo creciente, descartando las que crean ciclos. Usa componentes conexos para detectar ciclos eficientemente.</P>
-        <pre style={pre}>{`Kruskal(G)\n  A ← lista de aristas vacía\n  // Cada vértice = su propia componente\n  Repetir\n    elegir arista (u,v) de costo\n      mínimo de G no procesada aún\n    Si u y v en componentes DISTINTOS\n      agregar (u,v) a A\n      // unir las dos componentes\n    FinSi\n    // Si misma componente → ciclo\n    //   → descartar\n  Hasta que todos en un componente\n  devolver grafo(V, A)`}</pre>
-        <pre style={{...pre, marginTop:0}}>{`// Versión alternativa\nKruskal(G)\n  A ← todas las aristas\n  M ← grafo con V, sin aristas\n  n ← |V| - 1   // aristas necesarias\n  i ← 0\n  Mientras i < n hacer\n    (u,v) ← extraer arista min de A\n    agregar (u,v) a M\n    Si M tiene ciclo entonces\n      remover (u,v) de M  // descarta\n    Sino\n      i ← i + 1          // cuenta\n    FinSi\n  FinMientras\n  devolver M`}</pre>
+        <PseudoBlock label="Kruskal(G) — versión 1" lines={[
+          "Kruskal(G)",
+          "  A ← lista de aristas vacía",
+          "  // Cada vértice = su propia componente",
+          "  Repetir",
+          "    elegir arista (u,v) de costo",
+          "      mínimo de G no procesada aún",
+          "    Si u y v en componentes DISTINTOS",
+          "      agregar (u,v) a A",
+          "      // unir las dos componentes",
+          "    FinSi",
+          "    // Si misma componente → ciclo",
+          "    //   → descartar",
+          "  Hasta que todos en un componente",
+          "  devolver grafo(V, A)",
+        ]} steps={[[0,1,2],[3],[4,5],[6],[7,8],[9,10,11],[12],[13]]}
+           visual={(step) => kruskalPseudoVisual(step)} />
+        <PseudoBlock label="Kruskal(G) — versión 2" lines={[
+          "// Versión alternativa",
+          "Kruskal(G)",
+          "  A ← todas las aristas ordenadas",
+          "  M ← grafo con V, sin aristas",
+          "  n ← |V| - 1   // aristas necesarias",
+          "  i ← 0",
+          "  Mientras i < n hacer",
+          "    (u,v) ← extraer arista min de A",
+          "    agregar (u,v) a M",
+          "    Si M tiene ciclo entonces",
+          "      remover (u,v) de M  // descarta",
+          "    Sino",
+          "      i ← i + 1          // cuenta",
+          "    FinSi",
+          "  FinMientras",
+          "  devolver M",
+        ]} steps={[[0,1,2,3,4,5],[6],[7,8],[9],[10],[11,12],[13,14],[15]]}
+           visual={(step) => kruskalPseudoVisual(step)} />
         <div style={grn}>
           <p style={{fontFamily:"'JetBrains Mono',monospace", fontSize:10.5, color:GRN, lineHeight:1.8, margin:0}}>{`Complejidad:\n  Ordenar aristas: O(E log E)\n  Con Union-Find: O(E log V)\n  Union-Find con path compression: O(E·α)`}</p>
         </div>
@@ -161,7 +231,29 @@ export function pages() {
     () => <TwoCol title="Grafos No Dirigidos" badge="BFS — BUSQUEDA EN AMPLITUD" num={50}
       left={<div>
         <P>La <strong>BFS (Búsqueda en Amplitud / BEA)</strong> visita primero todos los vecinos de un nodo antes de profundizar. Usa una <strong>cola FIFO</strong>. Produce un árbol en que la distancia al origen es mínima (en número de aristas).</P>
-        <pre style={pre}>{`BEA(grafo G)\n  visitados ← conjunto vacío\n  cola      ← cola FIFO vacía\n\n  Para cada v en G hacer\n    Si v no visitado entonces\n      cola.encolar(v)\n      Para cada x = cola.desencolar()\n        agregar x a visitados\n        // procesar x\n        Para cada y adj. a x hacer\n          Si y no visitado entonces\n            cola.encolar(y)\n            agregar y a visitados\n            // marcar al encolar!\n          FinSi\n        FinPara\n      FinMientras\n    FinSi\n  FinPara`}</pre>
+        <PseudoBlock label="BEA(grafo G) — búsqueda en amplitud" lines={[
+          "BEA(grafo G)",
+          "  visitados ← conjunto vacío",
+          "  cola      ← cola FIFO vacía",
+          "",
+          "  Para cada v en G hacer",
+          "    Si v no visitado entonces",
+          "      cola.encolar(v)",
+          "      Para cada x = cola.desencolar()",
+          "        agregar x a visitados",
+          "        // procesar x",
+          "        Para cada y adj. a x hacer",
+          "          Si y no visitado entonces",
+          "            cola.encolar(y)",
+          "            agregar y a visitados",
+          "            // marcar al encolar!",
+          "          FinSi",
+          "        FinPara",
+          "      FinMientras",
+          "    FinSi",
+          "  FinPara",
+        ]} steps={[[0,1,2],[4,5],[6],[7,8,9],[10,11],[12,13,14],[15,16],[17,18,19]]}
+           visual={(step) => beaPseudoVisual(step)} />
         <CompTable headers={['','DFS','BFS']} rows={[
           ['Estructura','Pila / recursión','Cola FIFO'],
           ['Orden','Profundiza primero','Por niveles'],
@@ -183,7 +275,35 @@ export function pages() {
           <p style={{fontFamily:"'JetBrains Mono',monospace", fontSize:10.5, color:TX, lineHeight:1.8, margin:0}}>{`Sin puntos de articulación.\nEntre cualquier par de vértices\nexisten ≥ 2 caminos disjuntos en vértices.\nConectividad k ≥ 2.`}</p>
         </div>
         <P><strong>Algoritmo — DFS con num_bp y bajo[v]:</strong></P>
-        <pre style={pre}>{`// bajo[v] = mínimo de:\n//  1. num_bp[v]\n//  2. num_bp[z] para aristas retroceso (v,z)\n//  3. bajo[w] para hijos w de v en árbol\n\ndfs(G, v)\n  num_bp[v] ← ++contador\n  bajo[v]   ← num_bp[v]\n  hijos     ← 0\n  Para cada w adj. a v:\n    Si num_bp[w] = 0 entonces  // árbol\n      padre[w] ← v;  hijos++\n      dfs(G, w)\n      bajo[v] ← min(bajo[v], bajo[w])\n      // raíz con ≥2 hijos → AP\n      Si padre[v]=-1 y hijos≥2\n        reportar v como AP\n      FinSi\n      // no-raíz: bajo[w] ≥ num_bp[v] → AP\n      Si padre[v]≠-1 y bajo[w]≥num_bp[v]\n        reportar v como AP\n      FinSi\n    SiNo Si w ≠ padre[v]  // retroceso\n      bajo[v] ← min(bajo[v], num_bp[w])\n    FinSi\n  FinPara`}</pre>
+        <PseudoBlock label="DFS puntos de articulación" lines={[
+          "// bajo[v] = mínimo de:",
+          "//  1. num_bp[v]",
+          "//  2. num_bp[z] aristas retroceso (v,z)",
+          "//  3. bajo[w] hijos w en árbol",
+          "",
+          "dfs(G, v)",
+          "  num_bp[v] ← ++contador",
+          "  bajo[v]   ← num_bp[v]",
+          "  hijos     ← 0",
+          "  Para cada w adj. a v:",
+          "    Si num_bp[w] = 0 entonces  // árbol",
+          "      padre[w] ← v;  hijos++",
+          "      dfs(G, w)",
+          "      bajo[v] ← min(bajo[v], bajo[w])",
+          "      // raíz con ≥2 hijos → AP",
+          "      Si padre[v]=-1 y hijos≥2",
+          "        reportar v como AP",
+          "      FinSi",
+          "      // no-raíz: bajo[w] ≥ num_bp[v] → AP",
+          "      Si padre[v]≠-1 y bajo[w]≥num_bp[v]",
+          "        reportar v como AP",
+          "      FinSi",
+          "    SiNo Si w ≠ padre[v]  // retroceso",
+          "      bajo[v] ← min(bajo[v], num_bp[w])",
+          "    FinSi",
+          "  FinPara",
+        ]} steps={[[0,1,2,3],[5,6,7,8],[9,10],[11,12],[13],[14,15,16,17],[18,19,20,21],[22,23,24],[25]]}
+           visual={(step) => articulationPseudoVisual(step)} />
       </div>}
       right={<ArticulationViz />}
     />,

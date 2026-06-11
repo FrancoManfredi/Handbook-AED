@@ -6,6 +6,8 @@ import { GraphSplashSVG } from '../components/SplashVisuals';
 import { C, P, UL } from '../helpers';
 import { AC, BL, BD, TX } from '../constants';
 import { dijkstraVisual, pathVisual } from '../components/CodeVisuals';
+import PseudoBlock from '../components/PseudoBlock';
+import { dijkstraPseudoVisual, floydPseudoVisual, warshallVisual, bpfPseudoVisual, caminoPseudoVisual, topoPseudoVisual } from '../components/PseudoVisuals';
 
 const pre = {
   fontFamily: "'JetBrains Mono',monospace",
@@ -97,7 +99,25 @@ export function pages() {
         <div style={box}>
           <p style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10.5, color: AC, lineHeight: 1.8, margin: 0 }}>{`S  → vértices con distancia conocida\n     (inicia con {origen})\nD  → vector de costos mínimos\nP  → vector de predecesores`}</p>
         </div>
-        <pre style={pre}>{`dijkstra(origen, costo, V)\n  S ← {origen}\n  Para todo i en V hacer\n    D[i] ← costo(origen, i)\n    P[i] ← origen\n  FinPara\n  Mientras V ≠ S hacer\n    Elegir w ∈ V-S: D[w] mínimo\n    Agregar w a S\n    Para todo v en V-S hacer\n      Si D[w]+costo(w,v) < D[v]\n        D[v] ← D[w]+costo(w,v)\n        P[v] ← w\n      FinSi\n    FinPara\n  FinMientras`}</pre>
+        <PseudoBlock label="dijkstra(origen, costo, V)" lines={[
+          "dijkstra(origen, costo, V)",
+          "  S ← {origen}",
+          "  Para todo i en V hacer",
+          "    D[i] ← costo(origen, i)",
+          "    P[i] ← origen",
+          "  FinPara",
+          "  Mientras V ≠ S hacer",
+          "    Elegir w ∈ V-S: D[w] mínimo",
+          "    Agregar w a S",
+          "    Para todo v en V-S hacer",
+          "      Si D[w]+costo(w,v) < D[v]",
+          "        D[v] ← D[w]+costo(w,v)",
+          "        P[v] ← w",
+          "      FinSi",
+          "    FinPara",
+          "  FinMientras",
+        ]} steps={[[0],[1],[2,3,4,5],[6],[7,8],[9,10,11,12,13,14],[15]]}
+           visual={(step) => dijkstraPseudoVisual(step)} />
         <p style={{ fontFamily: "'Lora',serif", fontSize: 12, color: '#555', fontStyle: 'italic' }}>
           Recuperar camino al destino t: seguir P[t] → P[P[t]] → ... → origen (orden inverso).
         </p>
@@ -183,8 +203,39 @@ export function pages() {
           <p style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: AC, fontWeight: 700, margin: '0 0 4px' }}>Aₖ[i,j] = min( Aₖ₋₁[i,j] , Aₖ₋₁[i,k] + Aₖ₋₁[k,j] )</p>
           <p style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: '#888', margin: 0 }}>¿Mejor camino directo o pasar por el vértice k?</p>
         </div>
-        <pre style={pre}>{`// Inicialización\nPara todo i=1..n hacer\n  Para todo j=1..n hacer\n    A[i,j] ← C[i,j]\n    P[i,j] ← 0\n  FinPara;  A[i,i] ← 0\nFinPara\n\n// Iteración principal\nPara todo k=1..n hacer\n  Para todo i=1..n hacer\n    Para todo j=1..n hacer\n      Si A[i,k]+A[k,j] < A[i,j]\n        A[i,j] ← A[i,k]+A[k,j]\n        P[i,j] ← k\n      FinSi\n    FinPara\n  FinPara\nFinPara`}</pre>
-        <pre style={{ ...pre, marginTop: 0 }}>{`// Recuperar camino i→j:\ncamino(i, j)\n  k ← P[i,j]\n  Si k == 0 → salir  // directo\n  camino(i, k)\n  imprimir(k)\n  camino(k, j)\nfin`}</pre>
+        <PseudoBlock label="floyd — todos los pares" lines={[
+          "// Inicialización",
+          "Para todo i=1..n hacer",
+          "  Para todo j=1..n hacer",
+          "    A[i,j] ← C[i,j]",
+          "    P[i,j] ← 0",
+          "  FinPara;  A[i,i] ← 0",
+          "FinPara",
+          "",
+          "// Iteración principal",
+          "Para todo k=1..n hacer",
+          "  Para todo i=1..n hacer",
+          "    Para todo j=1..n hacer",
+          "      Si A[i,k]+A[k,j] < A[i,j]",
+          "        A[i,j] ← A[i,k]+A[k,j]",
+          "        P[i,j] ← k",
+          "      FinSi",
+          "    FinPara",
+          "  FinPara",
+          "FinPara",
+        ]} steps={[[0,1,2,3,4,5,6],[8,9],[10],[11],[12],[13,14],[15,16,17,18]]}
+           visual={(step) => floydPseudoVisual(step)} />
+        <PseudoBlock label="camino(i, j) — recuperar con P" lines={[
+          "// Recuperar camino i→j:",
+          "camino(i, j)",
+          "  k ← P[i,j]",
+          "  Si k == 0 → salir  // directo",
+          "  camino(i, k)",
+          "  imprimir(k)",
+          "  camino(k, j)",
+          "fin",
+        ]} steps={[[0,1],[2],[3],[4],[5],[6],[7]]}
+           visual={(step) => floydPseudoVisual(Math.min(step+4,7))} />
       </div>}
       right={<FloydViz />}
     />,
@@ -242,7 +293,24 @@ export function pages() {
     () => <TwoCol title="Grafos Dirigidos" badge="BUSQUEDA EN PROFUNDIDAD (BPF / DFS)" num={36}
       left={<div>
         <P>La <strong>BPF (DFS)</strong> visita sistemáticamente todos los vértices del grafo. Generalización del recorrido en preorden de árboles. Complejidad: {C('O(a)')} con listas de adyacencia.</P>
-        <pre style={pre}>{`bpf(vértice, visitados)\n  Si vértice en visitados → salir\n  Sino\n    agregar vértice a visitados\n    // procesar vértice\n    Para cada w adyacente:   ← (1)\n      bpf(w, visitados)\n    FinPara\n  FinSi\nFin\n\n// Llamada principal:\nPara cada v en V hacer\n  bpf(v, visitados)\nFinPara`}</pre>
+        <PseudoBlock label="bpf(vértice, visitados)" lines={[
+          "bpf(vértice, visitados)",
+          "  Si vértice en visitados → salir",
+          "  Sino",
+          "    agregar vértice a visitados",
+          "    // procesar vértice",
+          "    Para cada w adyacente:",
+          "      bpf(w, visitados)",
+          "    FinPara",
+          "  FinSi",
+          "Fin",
+          "",
+          "// Llamada principal:",
+          "Para cada v en V hacer",
+          "  bpf(v, visitados)",
+          "FinPara",
+        ]} steps={[[0],[1,2],[3,4],[5,6],[7,8,9],[11,12,13,14]]}
+           visual={(step) => bpfPseudoVisual(step)} />
         <div style={box}>
           <p style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10.5, color: AC, lineHeight: 1.9, margin: 0 }}>{`Tiempo con lista de adyacencias:\n  O(a) — cada arco examinado una vez\n\nTiempo con matriz:\n  O(n²) — se revisan todas las celdas`}</p>
         </div>
@@ -294,8 +362,41 @@ export function pages() {
     () => <TwoCol title="Grafos Dirigidos" badge="OBTENCION DE CAMINOS" num={38}
       left={<div>
         <P>La BPF es la base para encontrar caminos. "ElCamino" es una colección <strong>LIFO</strong> con los vértices pendientes en la recursión actual.</P>
-        <pre style={pre}>{`// Método de TVertice\nmétodo Camino(Destino, ElCamino)\n  Visitar(); Agregar(this, ElCamino)\n  Para cada w adyacente:\n    Si w == Destino entonces\n      Guardar(ElCamino + Destino)\n    Sino\n      Si no(visitado(w)) entonces\n        w.Camino(Destino, ElCamino)\n      FinSi\n    FinSi\n  FinPara\n  Quitar(this, ElCamino)  // backtrack\nFIN`}</pre>
-        <pre style={{ ...pre, marginTop: 0 }}>{`// Versión funcional\nobtenerCamino(origen, destino):\n  vis ← conjunto vacío\n  stk ← stack de nodos\n  devolver aux(origen,destino,vis,stk)\n\naux(nodo, dest, vis, stk):\n  Si nodo en vis → devolver nulo\n  Si nodo == dest → devolver copia(stk)\n  vis.add(nodo); stk.push(nodo)\n  Para cada w adyacente:\n    r ← aux(w, dest, vis, stk)\n    Si r ≠ nulo → devolver r\n  FinPara\n  vis.remove(nodo); stk.pop()\n  devolver nulo`}</pre>
+        <PseudoBlock label="método Camino(Destino, ElCamino)" lines={[
+          "// Método de TVertice",
+          "método Camino(Destino, ElCamino)",
+          "  Visitar(); Agregar(this, ElCamino)",
+          "  Para cada w adyacente:",
+          "    Si w == Destino entonces",
+          "      Guardar(ElCamino + Destino)",
+          "    Sino",
+          "      Si no(visitado(w)) entonces",
+          "        w.Camino(Destino, ElCamino)",
+          "      FinSi",
+          "    FinSi",
+          "  FinPara",
+          "  Quitar(this, ElCamino)  // backtrack",
+          "FIN",
+        ]} steps={[[0,1],[2],[3,4],[5],[6,7],[8],[9,10],[11],[12],[13]]}
+           visual={(step) => caminoPseudoVisual(step)} />
+        <PseudoBlock label="obtenerCaminoAux — versión funcional" lines={[
+          "obtenerCamino(origen, destino):",
+          "  vis ← conjunto vacío",
+          "  stk ← stack de nodos",
+          "  devolver aux(origen, destino, vis, stk)",
+          "",
+          "aux(nodo, dest, vis, stk):",
+          "  Si nodo en vis → devolver nulo",
+          "  Si nodo == dest → devolver copia(stk)",
+          "  vis.add(nodo); stk.push(nodo)",
+          "  Para cada w adyacente:",
+          "    r ← aux(w, dest, vis, stk)",
+          "    Si r ≠ nulo → devolver r",
+          "  FinPara",
+          "  vis.remove(nodo); stk.pop()",
+          "  devolver nulo",
+        ]} steps={[[0,1,2,3],[5,6],[7],[8],[9,10,11],[12],[13,14]]}
+           visual={(step) => caminoPseudoVisual(step)} />
       </div>}
       right={<div>
         <div style={{ ...blue, marginBottom: 14 }}>
@@ -335,7 +436,25 @@ export function pages() {
         <P>Asigna un <strong>orden lineal</strong> a los vértices de un GDA tal que, si existe arco de i a j, entonces i aparece antes que j. Representa un "orden parcial" de las tareas.</P>
         <P><strong>Aplicaciones:</strong> previaturas de cursos, tareas de proyecto con dependencias, compiladores (análisis de dependencias).</P>
         <P>BPF con <strong>procesamiento en la salida recursiva</strong> (post-orden): el nodo se agrega al inicio de la lista cuando terminan de visitarse todos sus descendientes.</P>
-        <pre style={pre}>{`clasificTopAux(nodo, vis, lista):\n  Si nodo NO en vis entonces\n    vis.agregar(nodo)\n    Para cada w adyacente:\n      clasificTopAux(w, vis, lista)\n    FinPara\n    // POST-ORDEN: agregar al PRINCIPIO\n    lista.agregarAlPrincipio(nodo)\n  FinSi\n\nclasificTopologica():\n  vis       ← conjunto vacío\n  listaNodos ← []\n  Para cada v en el grafo:\n    clasificTopAux(v, vis, listaNodos)\n  devolver listaNodos`}</pre>
+        <PseudoBlock label="clasificacionTopologica" lines={[
+          "clasificTopAux(nodo, vis, lista):",
+          "  Si nodo NO en vis entonces",
+          "    vis.agregar(nodo)",
+          "    Para cada w adyacente:",
+          "      clasificTopAux(w, vis, lista)",
+          "    FinPara",
+          "    // POST-ORDEN: agregar al PRINCIPIO",
+          "    lista.agregarAlPrincipio(nodo)",
+          "  FinSi",
+          "",
+          "clasificTopologica():",
+          "  vis        ← conjunto vacío",
+          "  listaNodos ← []",
+          "  Para cada v en el grafo:",
+          "    clasificTopAux(v, vis, listaNodos)",
+          "  devolver listaNodos",
+        ]} steps={[[0],[1,2],[3,4],[5],[6,7],[8,9],[10,11,12],[13,14],[15]]}
+           visual={(step) => topoPseudoVisual(step)} />
         <p style={{ fontFamily: "'Lora',serif", fontSize: 11.5, color: '#555', fontStyle: 'italic' }}>
           Complejidad: <strong>O(n + a)</strong> — igual que la BPF misma.
         </p>
@@ -453,11 +572,41 @@ export function floydPages() {
           <p style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10.5,color:BL_C,lineHeight:1.8,margin:0}}>{`A[1,2] = 8   (arco directo 1→2)\nA[2,3] = ∞   (no hay arco directo 2→3)\nA[3,1] = ∞   (no hay arco directo 3→1)\nA[i,i] = 0   (quedarse en mismo nodo)`}</p>
         </div>
         <P>A partir de acá se prueban intermediarios k = 1, 2 y 3.</P>
-        <pre style={pre}>{`// Pregunta en cada iteración k:\n"¿conviene ir i → k → j\n  en vez de ir i → j directamente?"\n\nSi A[i,k]+A[k,j] < A[i,j]:\n  A[i,j] ← A[i,k]+A[k,j]\n  P[i,j] ← k`}</pre>
+        <PseudoBlock label="Idea Floyd" lines={[
+          "// Pregunta en cada iteración k:",
+          "// ¿conviene ir i → k → j",
+          "//   en vez de ir i → j directamente?",
+          "",
+          "Si A[i,k]+A[k,j] < A[i,j]:",
+          "  A[i,j] ← A[i,k]+A[k,j]",
+          "  P[i,j] ← k",
+        ]} steps={[[0,1,2],[4],[5,6]]}
+           visual={(step) => floydPseudoVisual(step+1)} />
       </div>}
       right={<div>
         <P><strong>Algoritmo completo con recuperación de caminos:</strong></P>
-        <pre style={pre}>{`// A y C: matrices N×N de costos\nPara todo i=1..n hacer\n  Para todo j=1..n hacer\n    A[i,j] ← C[i,j]\n    P[i,j] ← 0\n  FinPara\n  A[i,i] ← 0\nFinPara\n\nPara todo k=1..n hacer\n  Para todo i=1..n hacer\n    Para todo j=1..n hacer\n      Si A[i,k]+A[k,j] < A[i,j]\n        A[i,j] ← A[i,k]+A[k,j]\n        P[i,j] ← k\n      FinSi\n    FinPara\n  FinPara\nFinPara`}</pre>
+        <PseudoBlock label="floyd con recuperación de caminos" lines={[
+          "// A y C: matrices N×N de costos",
+          "Para todo i=1..n hacer",
+          "  Para todo j=1..n hacer",
+          "    A[i,j] ← C[i,j]",
+          "    P[i,j] ← 0",
+          "  FinPara",
+          "  A[i,i] ← 0",
+          "FinPara",
+          "",
+          "Para todo k=1..n hacer",
+          "  Para todo i=1..n hacer",
+          "    Para todo j=1..n hacer",
+          "      Si A[i,k]+A[k,j] < A[i,j]",
+          "        A[i,j] ← A[i,k]+A[k,j]",
+          "        P[i,j] ← k",
+          "      FinSi",
+          "    FinPara",
+          "  FinPara",
+          "FinPara",
+        ]} steps={[[0,1,2,3,4,5,6,7],[9],[10],[11],[12],[13,14],[15,16,17,18]]}
+           visual={(step) => floydPseudoVisual(step)} />
         <div style={red}>
           <p style={{fontFamily:"'Lora',serif",fontWeight:700,fontSize:12.5,margin:'0 0 6px'}}>Interpretación de P[i,j]</p>
           <p style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10.5,color:TX_C,lineHeight:1.8,margin:0}}>{`P[i,j] = 0  → camino directo i→j\nP[i,j] = k  → el camino óptimo pasa\n               por el vértice k\n\nRecuperar camino i→j:\n  camino(i, j)\n    k ← P[i,j]\n    Si k == 0 → salir (directo)\n    camino(i, k)\n    imprimir(k)\n    camino(k, j)\n  fin`}</p>
@@ -515,7 +664,27 @@ export function floydPages() {
       left={<div>
         <P>Cuando solo interesa saber <strong>si existe</strong> un camino de i a j — sin calcular el costo — se usa Warshall. La matriz A es <strong>booleana</strong>: A[i,j]=true si hay algún camino de i a j.</P>
         <P>Es exactamente Floyd aplicado con lógica booleana: en vez de <code style={{color:AC_C,fontFamily:"'JetBrains Mono',monospace",fontSize:11}}>min(suma)</code> se usa <code style={{color:AC_C,fontFamily:"'JetBrains Mono',monospace",fontSize:11}}>OR(AND)</code>.</P>
-        <pre style={pre}>{`procedure Warshall(C: bool[n,n])\n  Para todo i=1..n hacer\n    Para todo j=1..n hacer\n      A[i,j] ← C[i,j]\n    FinPara\n    A[i,i] ← 0\n  FinPara\n\n  Para todo k=1..n hacer\n    Para todo i=1..n hacer\n      Para todo j=1..n hacer\n        Si A[i,j] = false entonces\n          A[i,j] ← A[i,k] AND A[k,j]\n        FinSi\n      FinPara\n    FinPara\n  FinPara\nfin`}</pre>
+        <PseudoBlock label="Warshall — cerradura transitiva" lines={[
+          "procedure Warshall(C: bool[n,n])",
+          "  Para todo i=1..n hacer",
+          "    Para todo j=1..n hacer",
+          "      A[i,j] ← C[i,j]",
+          "    FinPara",
+          "    A[i,i] ← 0",
+          "  FinPara",
+          "",
+          "  Para todo k=1..n hacer",
+          "    Para todo i=1..n hacer",
+          "      Para todo j=1..n hacer",
+          "        Si A[i,j] = false entonces",
+          "          A[i,j] ← A[i,k] AND A[k,j]",
+          "        FinSi",
+          "      FinPara",
+          "    FinPara",
+          "  FinPara",
+          "fin",
+        ]} steps={[[0,1,2,3,4,5,6],[8,9],[10],[11],[12],[13,14,15,16,17]]}
+           visual={(step) => warshallVisual(step)} />
         <div style={blue}>
           <p style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10.5,color:BL_C,lineHeight:1.8,margin:0}}>{`Complejidad: O(n³) tiempo, O(n²) espacio\n\nOptimización: usar bitsets (arrays de ints\ncomo bitmasks) → 64x más rápido en\nmáquinas de 64 bits.`}</p>
         </div>
